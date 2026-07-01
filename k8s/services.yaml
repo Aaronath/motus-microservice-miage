@@ -19,13 +19,12 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8083
+          envFrom:
+            - configMapRef:
+                name: motus-config
           env:
             - name: DB_HOST
               value: postgres-dictionary
-            - name: DB_USER
-              value: motus
-            - name: DB_PASSWORD
-              value: motus
 ---
 apiVersion: v1
 kind: Service
@@ -56,6 +55,7 @@ spec:
       containers:
         - name: player-service
           image: motus/player-service:1.0
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8081
           envFrom:
@@ -79,6 +79,45 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  name: stats-service
+  namespace: motus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stats-service
+  template:
+    metadata:
+      labels:
+        app: stats-service
+    spec:
+      containers:
+        - name: stats-service
+          image: motus/stats-service:1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8084
+          envFrom:
+            - configMapRef:
+                name: motus-config
+          env:
+            - name: DB_HOST
+              value: postgres-stats
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: stats-service
+  namespace: motus
+spec:
+  selector:
+    app: stats-service
+  ports:
+    - port: 8084
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
   name: game-service
   namespace: motus
 spec:
@@ -94,6 +133,7 @@ spec:
       containers:
         - name: game-service
           image: motus/game-service:1.0
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8082
           envFrom:
@@ -117,41 +157,6 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: stats-service
-  namespace: motus
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: stats-service
-  template:
-    metadata:
-      labels:
-        app: stats-service
-    spec:
-      containers:
-        - name: stats-service
-          image: motus/stats-service:1.0
-          ports:
-            - containerPort: 8084
-          env:
-            - name: DB_HOST
-              value: postgres-stats
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: stats-service
-  namespace: motus
-spec:
-  selector:
-    app: stats-service
-  ports:
-    - port: 8084
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
   name: api-gateway
   namespace: motus
 spec:
@@ -167,6 +172,7 @@ spec:
       containers:
         - name: api-gateway
           image: motus/api-gateway:1.0
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
           envFrom:

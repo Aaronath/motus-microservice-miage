@@ -72,7 +72,7 @@ Schéma détaillé : `docs/ARCHITECTURE.md`.
 | Gateway | Spring Cloud Gateway | Routage centralisé |
 | Client | React + Vite | Démo visuelle convaincante |
 | Conteneurs | Docker Compose | Déploiement reproductible |
-| Orchestration | Minikube / K8s | Manifests fournis (`k8s/`) ; démo validée via Docker Compose |
+| Orchestration | Minikube / K8s | Manifests `k8s/` + `./scripts/deploy-minikube.sh` |
 
 ### 3.3 Diagramme de classes métier
 
@@ -119,7 +119,7 @@ La **multiplication des bases PostgreSQL** et des fichiers de configuration asso
 
 ### Points plus difficiles
 
-Les principales difficultés ont concerné l'**orchestration de quatre bases PostgreSQL** en parallèle et la cohérence des variables d'environnement entre conteneurs. La **gestion homogène des erreurs HTTP** à travers la gateway et les services a également demandé de l'attention. L'**import du lexique** (~42 000 mots issus de Lexique383) au démarrage du `dictionary-service` a nécessité un traitement spécifique (compression, indexation). Enfin, les **manifests Kubernetes** fournis restent simplifiés ; le déploiement complet sur Minikube n'a pas été finalisé, la validation s'appuyant sur Docker Compose.
+Les principales difficultés ont concerné l'**orchestration de quatre bases PostgreSQL** en parallèle et la cohérence des variables d'environnement entre conteneurs. La **gestion homogène des erreurs HTTP** à travers la gateway et les services a également demandé de l'attention. L'**import du lexique** (~42 000 mots issus de Lexique383) au démarrage du `dictionary-service` a nécessité un traitement spécifique (compression, indexation). Enfin, la **mise en place initiale de Minikube** (images locales, quatre bases PostgreSQL, NodePort) a demandé un travail de configuration supplémentaire par rapport à Docker Compose.
 
 ### Réussites
 

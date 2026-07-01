@@ -25,6 +25,11 @@ spec:
               value: motus
           ports:
             - containerPort: 5432
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "motus"]
+            initialDelaySeconds: 5
+            periodSeconds: 5
 ---
 apiVersion: v1
 kind: Service
@@ -34,5 +39,137 @@ metadata:
 spec:
   selector:
     app: postgres-players
+  ports:
+    - port: 5432
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-dictionary
+  namespace: motus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-dictionary
+  template:
+    metadata:
+      labels:
+        app: postgres-dictionary
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          env:
+            - name: POSTGRES_DB
+              value: motus_dictionary
+            - name: POSTGRES_USER
+              value: motus
+            - name: POSTGRES_PASSWORD
+              value: motus
+          ports:
+            - containerPort: 5432
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "motus"]
+            initialDelaySeconds: 5
+            periodSeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-dictionary
+  namespace: motus
+spec:
+  selector:
+    app: postgres-dictionary
+  ports:
+    - port: 5432
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-games
+  namespace: motus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-games
+  template:
+    metadata:
+      labels:
+        app: postgres-games
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          env:
+            - name: POSTGRES_DB
+              value: motus_games
+            - name: POSTGRES_USER
+              value: motus
+            - name: POSTGRES_PASSWORD
+              value: motus
+          ports:
+            - containerPort: 5432
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "motus"]
+            initialDelaySeconds: 5
+            periodSeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-games
+  namespace: motus
+spec:
+  selector:
+    app: postgres-games
+  ports:
+    - port: 5432
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-stats
+  namespace: motus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-stats
+  template:
+    metadata:
+      labels:
+        app: postgres-stats
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          env:
+            - name: POSTGRES_DB
+              value: motus_stats
+            - name: POSTGRES_USER
+              value: motus
+            - name: POSTGRES_PASSWORD
+              value: motus
+          ports:
+            - containerPort: 5432
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "motus"]
+            initialDelaySeconds: 5
+            periodSeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-stats
+  namespace: motus
+spec:
+  selector:
+    app: postgres-stats
   ports:
     - port: 5432

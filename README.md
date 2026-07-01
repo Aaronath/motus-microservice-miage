@@ -93,7 +93,13 @@ Documentation détaillée : [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md), [`do
 
 ## Minikube
 
-Voir [`docs/MINIKUBE.md`](docs/MINIKUBE.md) et `./scripts/deploy-minikube.sh`.
+Déploiement Kubernetes complet (4 PostgreSQL + 5 services + frontend) :
+
+```bash
+./scripts/deploy-minikube.sh
+```
+
+Voir [`docs/MINIKUBE.md`](docs/MINIKUBE.md) pour les détails et le dépannage.
 
 ## Structure du projet
 
