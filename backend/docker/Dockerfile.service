@@ -1,0 +1,20 @@
+FROM maven:3.9-eclipse-temurin-17 AS build
+WORKDIR /app
+COPY pom.xml .
+COPY motus-common motus-common
+COPY dictionary-service dictionary-service
+COPY player-service player-service
+COPY game-service game-service
+COPY stats-service stats-service
+COPY api-gateway api-gateway
+COPY integration-tests integration-tests
+ARG MODULE
+RUN mvn -pl ${MODULE} -am package -DskipTests -q
+
+FROM eclipse-temurin:17-jre
+WORKDIR /app
+ARG MODULE
+ARG JAR_FILE
+COPY --from=build /app/${MODULE}/target/${JAR_FILE} app.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "app.jar"]

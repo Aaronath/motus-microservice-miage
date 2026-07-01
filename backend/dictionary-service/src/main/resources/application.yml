@@ -1,0 +1,39 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: dictionary-service
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5433}/motus_dictionary
+    username: ${DB_USER:motus}
+    password: ${DB_PASSWORD:motus}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+motus:
+  jwt:
+    secret: ${JWT_SECRET:motus-miage-sitn-2026-secret-key-min-32-chars!!}
+    expiration-ms: 86400000
+  dictionary:
+    # lexique = Lexique383 (CSV) | groups = familles thématiques | both = lexique + groupes
+    source: ${DICTIONARY_SOURCE:both}
+    lexique-path: ${DICTIONARY_LEXIQUE_PATH:classpath:data/lexique-motus-5-9.csv.gz}
+    words-url: ${DICTIONARY_WORDS_URL:https://raw.githubusercontent.com/Taknok/French-Wordlist/master/francais.txt}
+    min-length: 5
+    max-length: 9
+    min-words-per-length: 200
+    force-reload: ${DICTIONARY_FORCE_RELOAD:false}
+    # Optionnel — https://www.dicolink.com/api/inscription (mot au hasard + validation live)
+    dicolink-api-key: ${DICOLINK_API_KEY:}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

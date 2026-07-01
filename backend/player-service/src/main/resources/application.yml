@@ -1,0 +1,24 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: player-service
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/motus_players
+    username: ${DB_USER:motus}
+    password: ${DB_PASSWORD:motus}
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+motus:
+  jwt:
+    secret: ${JWT_SECRET:motus-miage-sitn-2026-secret-key-min-32-chars!!}
+    expiration-ms: 86400000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

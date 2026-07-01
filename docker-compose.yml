@@ -1,0 +1,145 @@
+services:
+  db-players:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: motus_players
+      POSTGRES_USER: motus
+      POSTGRES_PASSWORD: motus
+    ports: ["5432:5432"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U motus"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  db-dictionary:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: motus_dictionary
+      POSTGRES_USER: motus
+      POSTGRES_PASSWORD: motus
+    ports: ["5433:5432"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U motus"]
+      interval: 5s
+      retries: 5
+
+  db-games:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: motus_games
+      POSTGRES_USER: motus
+      POSTGRES_PASSWORD: motus
+    ports: ["5434:5432"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U motus"]
+      interval: 5s
+      retries: 5
+
+  db-stats:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: motus_stats
+      POSTGRES_USER: motus
+      POSTGRES_PASSWORD: motus
+    ports: ["5435:5432"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U motus"]
+      interval: 5s
+      retries: 5
+
+  dictionary-service:
+    build:
+      context: ./backend
+      dockerfile: docker/Dockerfile.service
+      args:
+        MODULE: dictionary-service
+        JAR_FILE: dictionary-service-1.0.0-SNAPSHOT.jar
+    environment:
+      DB_HOST: db-dictionary
+      DB_PORT: "5432"
+      DICTIONARY_SOURCE: both
+      DICTIONARY_FORCE_RELOAD: "true"
+      JWT_SECRET: motus-miage-sitn-2026-secret-key-min-32-chars!!
+      DICOLINK_API_KEY: ${DICOLINK_API_KEY:-}
+    depends_on:
+      db-dictionary:
+        condition: service_healthy
+    ports: ["8083:8083"]
+
+  player-service:
+    build:
+      context: ./backend
+      dockerfile: docker/Dockerfile.service
+      args:
+        MODULE: player-service
+        JAR_FILE: player-service-1.0.0-SNAPSHOT.jar
+    environment:
+      DB_HOST: db-players
+      JWT_SECRET: motus-miage-sitn-2026-secret-key-min-32-chars!!
+    depends_on:
+      db-players:
+        condition: service_healthy
+    ports: ["8081:8081"]
+
+  stats-service:
+    build:
+      context: ./backend
+      dockerfile: docker/Dockerfile.service
+      args:
+        MODULE: stats-service
+        JAR_FILE: stats-service-1.0.0-SNAPSHOT.jar
+    environment:
+      DB_HOST: db-stats
+      DB_PORT: "5432"
+    depends_on:
+      db-stats:
+        condition: service_healthy
+    ports: ["8084:8084"]
+
+  game-service:
+    build:
+      context: ./backend
+      dockerfile: docker/Dockerfile.service
+      args:
+        MODULE: game-service
+        JAR_FILE: game-service-1.0.0-SNAPSHOT.jar
+    environment:
+      DB_HOST: db-games
+      DB_PORT: "5432"
+      DICTIONARY_URL: http://dictionary-service:8083
+      STATS_URL: http://stats-service:8084
+      JWT_SECRET: motus-miage-sitn-2026-secret-key-min-32-chars!!
+    depends_on:
+      dictionary-service:
+        condition: service_started
+      stats-service:
+        condition: service_started
+      db-games:
+        condition: service_healthy
+    ports: ["8082:8082"]
+
+  api-gateway:
+    build:
+      context: ./backend
+      dockerfile: docker/Dockerfile.service
+      args:
+        MODULE: api-gateway
+        JAR_FILE: api-gateway-1.0.0-SNAPSHOT.jar
+    environment:
+      PLAYER_SERVICE_URL: http://player-service:8081
+      DICTIONARY_SERVICE_URL: http://dictionary-service:8083
+      GAME_SERVICE_URL: http://game-service:8082
+      STATS_SERVICE_URL: http://stats-service:8084
+    depends_on:
+      - player-service
+      - dictionary-service
+      - game-service
+      - stats-service
+    ports: ["8080:8080"]
+
+  frontend:
+    build: ./frontend
+    depends_on:
+      - api-gateway
+    ports: ["3000:80"]

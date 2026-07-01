@@ -1,0 +1,37 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+      routes:
+        - id: player-service
+          uri: ${PLAYER_SERVICE_URL:http://localhost:8081}
+          predicates:
+            - Path=/api/players/**
+        - id: dictionary-service
+          uri: ${DICTIONARY_SERVICE_URL:http://localhost:8083}
+          predicates:
+            - Path=/api/dictionary/**
+        - id: game-service
+          uri: ${GAME_SERVICE_URL:http://localhost:8082}
+          predicates:
+            - Path=/api/games/**
+        - id: stats-service
+          uri: ${STATS_SERVICE_URL:http://localhost:8084}
+          predicates:
+            - Path=/api/stats/**
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
