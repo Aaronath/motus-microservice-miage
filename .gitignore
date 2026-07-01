@@ -25,5 +25,6 @@ frontend/.env.local
 # OS
 Thumbs.db
 
-# Lexique383 source (téléchargé par scripts/build-lexique-motus.py)
+# Lexique383 source (telecharge par scripts/build-lexique-motus.py)
 data/Lexique383.tsv
+data/*.csv.gz

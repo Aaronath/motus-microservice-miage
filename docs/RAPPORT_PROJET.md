@@ -2,7 +2,8 @@
 
 **Master 2 MIAGE SITN — Apprentissage 2025-2026**  
 **Module :** Applications Web orientées Services — M. Menceur  
-**Soutenance / remise :** 4 juillet 2026  
+**Remise (PDF + lien GitHub) :** 4 juillet 2026 au plus tard — mouloud.menceur@gmail.com  
+**Soutenance :** 7 juillet 2026, 8h30–13h30 (20 min : 10 min présentation + 10 min questions individuelles)  
 **Dépôt GitHub :** [github.com/Aaronath/motus-microservice-miage](https://github.com/Aaronath/motus-microservice-miage)
 
 ---
@@ -28,7 +29,7 @@
 
 ## 2. Compilation et exécution
 
-Voir le fichier **`README.md`** à la racine du dépôt GitHub.
+Voir **`README.md`** (racine) et **`docs/readme.txt`** (résumé rapide).
 
 **Résumé :**
 
@@ -112,6 +113,10 @@ Nous avons particulièrement apprécié de **mettre en pratique les notions du c
 
 Ce projet nous a permis d'approfondir le **découpage d'un domaine en bounded contexts** (joueurs, parties, dictionnaire, statistiques), chacun avec sa propre base de données. Nous avons mis en œuvre la **communication inter-services** via `RestClient` (game → dictionary, game → stats) et une **authentification JWT stateless** partagée entre la gateway et les services métier. Nous avons consolidé nos compétences en **Spring Data JPA**, en **conteneurisation multi-services** (quatre PostgreSQL, cinq services Java, un frontend Nginx) et en **routage centralisé** avec Spring Cloud Gateway.
 
+### Ce que nous avons moins aimé
+
+La **multiplication des bases PostgreSQL** et des fichiers de configuration associés a rendu le débogage local parfois fastidieux. La **configuration Minikube** (manifests Kubernetes à maintenir en parallèle de Docker Compose) nous a semblé lourde pour un premier déploiement. Enfin, la **gestion des erreurs distribuées** entre cinq services reste perfectible : un message d'erreur clair côté client demande parfois de remonter plusieurs logs.
+
 ### Points plus difficiles
 
 Les principales difficultés ont concerné l'**orchestration de quatre bases PostgreSQL** en parallèle et la cohérence des variables d'environnement entre conteneurs. La **gestion homogène des erreurs HTTP** à travers la gateway et les services a également demandé de l'attention. L'**import du lexique** (~42 000 mots issus de Lexique383) au démarrage du `dictionary-service` a nécessité un traitement spécifique (compression, indexation). Enfin, les **manifests Kubernetes** fournis restent simplifiés ; le déploiement complet sur Minikube n'a pas été finalisé, la validation s'appuyant sur Docker Compose.
@@ -126,4 +131,4 @@ Nous sommes satisfaits d'avoir livré une **application jouable de bout en bout*
 
 ---
 
-*Document à exporter en PDF (5 pages max) pour remise au 4 juillet 2026 — mouloud.menceur@gmail.com*
+*Rapport PDF (5 pages max) — remise au 4 juillet 2026 — mouloud.menceur@gmail.com (+ lien GitHub)*

@@ -120,6 +120,13 @@ Chaque service suit le squelette **start.spring.io** : `controller`, `service`, 
 
 ## Rendu
 
-- Rapport PDF (5 pages max) : exporter `docs/RAPPORT_PROJET.md`
-- Dépôt GitHub : [github.com/Aaronath/motus-microservice-miage](https://github.com/Aaronath/motus-microservice-miage)
-- Remise : **4 juillet 2026** — mouloud.menceur@gmail.com
+Conformément à l'énoncé du projet (§2.2.4) :
+
+| Livrable | Détail |
+|----------|--------|
+| **Rapport PDF** | 5 pages max — `docs/RAPPORT_PROJET.md` ou `docs/rapport.pdf` |
+| **Dépôt GitHub** | [github.com/Aaronath/motus-microservice-miage](https://github.com/Aaronath/motus-microservice-miage) |
+| **Remise par mail** | **4 juillet 2026** au plus tard → mouloud.menceur@gmail.com (PDF + lien GitHub) |
+| **Soutenance** | **7 juillet 2026**, 8h30–13h30 — 20 min (10 min présentation + 10 min questions individuelles) |
+
+Instructions rapides : `docs/readme.txt`
