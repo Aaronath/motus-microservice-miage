@@ -19,3 +19,7 @@ Compte admin (inscription) : code MIAGE-ADMIN-2026
 Rapport PDF : docs/rapport.pdf (5 pages max)
 Remise mail : 4 juillet 2026 -> mouloud.menceur@gmail.com (+ lien GitHub)
 Soutenance : 7 juillet 2026, 8h30-13h30
+
+Minikube :
+  ./scripts/deploy-minikube.sh
+  minikube service frontend -n motus --url

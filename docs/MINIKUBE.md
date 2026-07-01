@@ -8,7 +8,7 @@ Conformément à l'énoncé du projet (conteneurisation Docker + déploiement Mi
 # macOS (Homebrew)
 brew install minikube
 
-minikube start --cpus=4 --memory=8192
+minikube start --cpus=4 --memory=6144
 kubectl version --client
 docker compose version
 ```

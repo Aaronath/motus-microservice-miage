@@ -12,7 +12,7 @@ fi
 
 if ! minikube status >/dev/null 2>&1; then
   echo "Démarrage de Minikube..."
-  minikube start --cpus=4 --memory=8192
+  minikube start --cpus=4 --memory=6144
 fi
 
 echo "Construction des images dans le daemon Docker de Minikube..."

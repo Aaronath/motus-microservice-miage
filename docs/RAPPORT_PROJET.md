@@ -21,7 +21,7 @@
 | Conception de l'architecture microservices | ✓ | ✓ |
 | Services Spring Boot (backend) | ✓ | |
 | Interface React (frontend) | | ✓ |
-| Docker Compose et scripts de build | ✓ | |
+| Docker Compose et déploiement Minikube | ✓ | |
 | Recette fonctionnelle et conformité au sujet | | ✓ |
 | Rédaction du rapport et de la documentation | ✓ | ✓ |
 
@@ -33,12 +33,25 @@ Voir **`README.md`** (racine) et **`docs/readme.txt`** (résumé rapide).
 
 **Résumé :**
 
+**Docker Compose :**
+
 ```bash
 ./scripts/build-all.sh
 docker compose up --build -d
 # Frontend : http://localhost:3000
 # API Gateway : http://localhost:8080
 ```
+
+**Minikube** (exigence énoncé §2.2.3) :
+
+```bash
+brew install minikube   # si nécessaire
+./scripts/deploy-minikube.sh
+# Frontend : minikube service frontend -n motus --url
+# API Gateway : minikube service api-gateway -n motus --url
+```
+
+Documentation détaillée : `docs/MINIKUBE.md`.
 
 Compte administrateur : code `MIAGE-ADMIN-2026` à l'inscription.
 
@@ -72,7 +85,7 @@ Schéma détaillé : `docs/ARCHITECTURE.md`.
 | Gateway | Spring Cloud Gateway | Routage centralisé |
 | Client | React + Vite | Démo visuelle convaincante |
 | Conteneurs | Docker Compose | Déploiement reproductible |
-| Orchestration | Minikube / K8s | Manifests `k8s/` + `./scripts/deploy-minikube.sh` |
+| Orchestration | Minikube / Kubernetes | Namespace `motus`, manifests `k8s/`, script `deploy-minikube.sh` |
 
 ### 3.3 Diagramme de classes métier
 
@@ -101,33 +114,42 @@ Diagramme Mermaid : `docs/CLASS_DIAGRAM.md`.
 Documentation complète : `docs/API.md`.  
 Conformité au cahier des charges : `docs/CONFORMITE_SUJET.md`.
 
+### 3.6 Déploiement Minikube
+
+Conformément à l'énoncé (§2.2.3), l'application est déployable sur **Minikube** en plus de Docker Compose :
+
+- **4 déploiements PostgreSQL** et **10 pods** (4 BDD + 5 services + frontend)
+- **ConfigMap** : JWT, URLs inter-services, paramètres dictionnaire
+- **NodePort** : frontend (30000), api-gateway (30080)
+- Script automatisé : `./scripts/deploy-minikube.sh` — voir `docs/MINIKUBE.md`
+
 ---
 
 ## 4. Bilan du projet
 
 ### Ce que nous avons apprécié
 
-Nous avons particulièrement apprécié de **mettre en pratique les notions du cours** — découpage en microservices, persistance JPA, API Gateway — sur un cas concret et ludique. L'implémentation de l'**algorithme Motus** avec un retour visuel immédiat (grille colorée, animations) a donné une dimension tangible au projet. Enfin, la **stack Docker Compose** nous a permis de disposer d'une démonstration fiable et reproductible, aussi bien en développement qu'en vue de la soutenance.
+Nous avons particulièrement apprécié de **mettre en pratique les notions du cours** — découpage en microservices, persistance JPA, API Gateway — sur un cas concret et ludique. L'implémentation de l'**algorithme Motus** avec un retour visuel immédiat (grille colorée, animations) a donné une dimension tangible au projet. Enfin, disposer de **deux modes de déploiement** (Docker Compose pour le développement, Minikube pour l'orchestration Kubernetes) nous a permis une démonstration fiable en soutenance.
 
 ### Ce que nous avons appris
 
-Ce projet nous a permis d'approfondir le **découpage d'un domaine en bounded contexts** (joueurs, parties, dictionnaire, statistiques), chacun avec sa propre base de données. Nous avons mis en œuvre la **communication inter-services** via `RestClient` (game → dictionary, game → stats) et une **authentification JWT stateless** partagée entre la gateway et les services métier. Nous avons consolidé nos compétences en **Spring Data JPA**, en **conteneurisation multi-services** (quatre PostgreSQL, cinq services Java, un frontend Nginx) et en **routage centralisé** avec Spring Cloud Gateway.
+Ce projet nous a permis d'approfondir le **découpage d'un domaine en bounded contexts** (joueurs, parties, dictionnaire, statistiques), chacun avec sa propre base de données. Nous avons mis en œuvre la **communication inter-services** via `RestClient`, une **authentification JWT stateless** et le **déploiement sur Minikube** (manifests Kubernetes, ConfigMap, NodePort, images locales). Nous avons consolidé nos compétences en **Spring Data JPA**, **Docker Compose** et **orchestration Kubernetes**.
 
 ### Ce que nous avons moins aimé
 
-La **multiplication des bases PostgreSQL** et des fichiers de configuration associés a rendu le débogage local parfois fastidieux. La **configuration Minikube** (manifests Kubernetes à maintenir en parallèle de Docker Compose) nous a semblé lourde pour un premier déploiement. Enfin, la **gestion des erreurs distribuées** entre cinq services reste perfectible : un message d'erreur clair côté client demande parfois de remonter plusieurs logs.
+La **multiplication des bases PostgreSQL** et des fichiers de configuration associés a rendu le débogage local parfois fastidieux. Le **premier démarrage de Minikube** a posé des contraintes de mémoire (allocation Docker Desktop) et un temps de build important. Enfin, la **gestion des erreurs distribuées** entre cinq services reste perfectible.
 
 ### Points plus difficiles
 
-Les principales difficultés ont concerné l'**orchestration de quatre bases PostgreSQL** en parallèle et la cohérence des variables d'environnement entre conteneurs. La **gestion homogène des erreurs HTTP** à travers la gateway et les services a également demandé de l'attention. L'**import du lexique** (~42 000 mots issus de Lexique383) au démarrage du `dictionary-service` a nécessité un traitement spécifique (compression, indexation). Enfin, la **mise en place initiale de Minikube** (images locales, quatre bases PostgreSQL, NodePort) a demandé un travail de configuration supplémentaire par rapport à Docker Compose.
+Les principales difficultés ont concerné l'**orchestration de quatre bases PostgreSQL** et la cohérence des variables d'environnement entre Docker Compose et Kubernetes. L'**import du lexique** (~47 000 mots Lexique383) au démarrage du `dictionary-service` a nécessité compression et indexation. Le **déploiement Minikube** (tag d'images locales, ConfigMap, readiness des pods) a demandé un travail de configuration distinct de Docker Compose.
 
 ### Réussites
 
-Nous sommes satisfaits d'avoir livré une **application jouable de bout en bout** : inscription, création de partie, propositions, scoring, historique et classement. Le **panneau d'administration** dépasse le minimum exigé (recherche de parties, gestion des joueurs et du dictionnaire). Le dictionnaire s'appuie sur **Lexique383** avec des groupes thématiques, et des **tests unitaires** couvrent l'algorithme de scoring. Une **documentation structurée** (architecture, API, conformité) accompagne le code source.
+Nous sommes satisfaits d'avoir livré une **application jouable de bout en bout** et un **déploiement Minikube complet** (4 PostgreSQL, 5 microservices, frontend) conforme à l'énoncé. Le **panneau d'administration** dépasse le minimum exigé. Le dictionnaire s'appuie sur **Lexique383**, des **tests unitaires** couvrent le scoring, et une **documentation structurée** (architecture, API, Minikube, conformité) accompagne le code.
 
 ### Pistes d'amélioration
 
-À terme, un **service discovery** (Eureka ou Consul) éviterait les URLs codées en dur, et un **bus de messages** (Kafka) pourrait découpler l'enregistrement des statistiques. Un **pipeline CI/CD** avec tests d'intégration automatisés (déjà esquissés dans le module `integration-tests`) renforcerait la qualité. Enfin, un **déploiement Kubernetes complet** avec les quatre bases dédiées permettrait de valider l'orchestration sur Minikube.
+À terme, un **service discovery** (Eureka ou Consul) éviterait les URLs codées en dur, et un **bus de messages** (Kafka) pourrait découpler l'enregistrement des statistiques. Un **pipeline CI/CD** avec tests d'intégration automatisés renforcerait la qualité. Des **probes de santé** (liveness/readiness) sur tous les microservices amélioreraient la résilience sous Kubernetes.
 
 ---
 
